@@ -1,14 +1,22 @@
 package matangolan.goliath
 
+import java.net.URLEncoder
+import java.nio.charset.Charset
+
 package object network {
+
+  val encoding: String = Charset.forName("UTF-8").name()
+  def urlEncode(str: String) = {
+    URLEncoder.encode(str, encoding)
+  }
 
   /**
     * Enumeration of supported network protocols.
     * @param name the plain text name of the protocol.
     */
   sealed abstract class NetworkProtocol(name: String){override def toString: String = s"$name"}
-  sealed case object Http extends NetworkProtocol("http")
-  sealed case object Https extends NetworkProtocol("https")
+  case object Http extends NetworkProtocol("http")
+  case object Https extends NetworkProtocol("https")
 
   /**
     * Abstraction of internet address which contains an host address, port and protocol.
@@ -31,7 +39,11 @@ package object network {
 
 
   sealed abstract class KeyValuePair[K, V](key: K, value: V)
-  sealed case class QueryParam(key: String, value: String) extends KeyValuePair[String, String](key, value)
-  sealed case class HttpHeader(name: String, value: String) extends KeyValuePair[String, String](name, value)
+  sealed case class QueryParam(key: String, value: String) extends KeyValuePair[String, String](key, value) {
+    override def toString: String = s"${urlEncode(key)}=${urlEncode(value)}"
+  }
+  sealed case class HttpHeader(name: String, value: String) extends KeyValuePair[String, String](name, value){
+    override def toString: String = s"$name: $value"
+  }
 
 }

@@ -1,5 +1,7 @@
 package matangolan.goliath.network
 
+import io.undertow.server.HttpHandler
+
 object Rest {
 
   /**
@@ -7,10 +9,10 @@ object Rest {
     * @param name the actual string value of the http method.
     */
   sealed abstract class HttpMethod(name: String){override def toString: String = s"$name"}
-  sealed case object Get extends HttpMethod("GET")
-  sealed case object Put extends HttpMethod("PUT")
-  sealed case object Post extends HttpMethod("POST")
-  sealed case object Delete extends HttpMethod("DELETE")
+  case object Get extends HttpMethod("GET")
+  case object Put extends HttpMethod("PUT")
+  case object Post extends HttpMethod("POST")
+  case object Delete extends HttpMethod("DELETE")
 
 
   sealed abstract class RestfulRequest(method: HttpMethod,
@@ -42,5 +44,7 @@ object Rest {
                                queryParams: Seq[QueryParam],
                                body: Option[Array[Byte]]
                               ) extends RestfulRequest(Delete, internetResource, headers, queryParams, body)
+
+  sealed case class RestRoute(httpMethod: HttpMethod, path: String, handler: HttpHandler)
 
 }
